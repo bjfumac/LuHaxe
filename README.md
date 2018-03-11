@@ -1,6 +1,6 @@
 
 ## LuHaxe
-LuHaxe是我的一个脑洞概念实现，它的目标是结合Haxe和Lua的优点，更好地在Unity3D环境中进行动态脚本的开发工作。
+LuHaxe是我的一个脑洞概念实现，它的目标是让程序员通过编写Haxe（与ActionScript、TypeScript极其相似的体验和手感），完成Unity3D环境中lua脚本的开发工作。胶水中的胶水，不会lua也能写一手好lua的胶水。
 ## LuHaxe特点
 * 底层采用某大神的[tolua](https://github.com/topameng/tolua)，成熟稳定，重复造车轮子不是脑洞的目的。因此本框架具有tolua的全部特点。
 * 采用Haxe语言进行脚本编写，并“翻译”成lua执行，代替在tolua环境下进行lua脚本编写的传统开发模式。
