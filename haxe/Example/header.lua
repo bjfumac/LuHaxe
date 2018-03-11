@@ -1,2 +1,0 @@
-local GameObject = UnityEngine.GameObject
---
