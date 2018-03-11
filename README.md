@@ -6,15 +6,15 @@ LuHaxe是我的一个脑洞概念实现，它的目标是结合Haxe和Lua的优�
 * Haxe是强类型的面向对象语言，具有完整的面向对象特性，包括但不限于继承、接口、抽象、g/setter、lambda、泛型模板等，详见[Wiki](https://en.wikipedia.org/wiki/Haxe)。更贴合Java、C#等程序员的书写和设计习惯。
 * 支持HaxeDevelop(FlashDevelop)、VS Code等代码编辑工具，具有完善的代码提示、代码自动完成、Refactor、类型检测、编译时错误检测等。解决了当下lua开发中比较大的痛点，方便多人同步进行规模化开发。
 * AS、TS、JS程序员可三分钟内上手。
-* 有大量成品的Haxe库，如：[PureMVC](https://github.com/PureMVC/puremvc-haxe-multicore-framework)、[Enitias](https://github.com/montonero/entithax)、[Protobuf](https://github.com/nitrobin/protohx)、[Bson](https://github.com/qifun/json-stream)等。移植其他语言类库也比较容易。
-* 支持byte api，配合Protobuf和Bson等工具，可以更快速地实现数据序列化。tolua自带的protobuf装箱还是有一定工作量的。
+* 有成品的Haxe库和底层库不依赖tolua，如：[PureMVC](https://github.com/PureMVC/puremvc-haxe-multicore-framework)、[Enitias](https://github.com/montonero/entithax)、[Protobuf](https://github.com/nitrobin/protohx)、[Bson](https://github.com/qifun/json-stream)、[TCP/UDP Socket](https://github.com/MattTuttle/hxnet)等。移植其他语言类库也比较容易。
+
 <br />
 
 ## 安装(Windows)
 * 下载Haxe [https://haxe.org/download/](https://haxe.org/download/)
 * 下载IDE [推荐HaxeDevelop，用本框架可以免配置，其他编辑器需要手动配置](https://haxe.org/documentation/introduction/editors-and-ides.html)
-* 打开HaxeDevelop并打开项目haxe\Example，修改hx文件后，执行菜单中的Build Project。
-* 打开Unity并配置项目目录unity\Example，然后打开场景Example\Example，运行查看效果。
+* 打开HaxeDevelop并打开项目haxe/Example，修改hx文件后，执行菜单中的Build Project。
+* 打开Unity并打开项目unity/Example，然后打开场景unity/Example/Assets/Example，运行查看效果。
 
 
 
