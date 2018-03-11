@@ -5,8 +5,9 @@ LuHaxe是我的一个脑洞概念实现，它的目标是结合Haxe和Lua的优�
 * 采用Haxe语言进行脚本编写，并“翻译”成lua执行，代替在tolua环境下进行lua脚本编写的传统开发模式。
 * Haxe是强类型的面向对象语言，具有完整的面向对象特性，包括但不限于继承、接口、抽象、g/setter、lambda、泛型模板等，详见[Wiki](https://en.wikipedia.org/wiki/Haxe)。更贴合Java、C#等程序员的书写和设计习惯。
 * 支持HaxeDevelop(FlashDevelop)、VS Code等代码编辑工具，具有完善的代码提示、代码自动完成、Refactor、类型检测、编译时错误检测等。解决了当下lua开发中比较大的痛点，方便多人同步进行规模化开发。
+* 可通过trace输出日志的方式调试Haxe文件，亦可以通过tolua的调试机制调试生成的lua文件。
 * AS、TS、JS程序员可三分钟内上手。
-* 有成品的Haxe库和底层库不依赖tolua，如：[PureMVC](https://github.com/PureMVC/puremvc-haxe-multicore-framework)、[Enitias](https://github.com/montonero/entithax)、[Protobuf](https://github.com/nitrobin/protohx)、[Bson](https://github.com/qifun/json-stream)、[TCP/UDP Socket](https://github.com/MattTuttle/hxnet)等。移植其他语言类库也比较容易。
+* 有成品的Haxe库和底层库不依赖tolua，如：[PureMVC(MVC框架)](https://github.com/PureMVC/puremvc-haxe-multicore-framework)、[Enitias(ECS框架)](https://github.com/montonero/entithax)、[Protobuf（序列化）](https://github.com/nitrobin/protohx)、[Bson（序列化）](https://github.com/qifun/json-stream)、[TCP/UDP Socket](https://github.com/MattTuttle/hxnet)等。移植其他语言类库也比较容易。
 
 <br />
 
