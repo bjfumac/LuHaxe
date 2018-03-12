@@ -138,6 +138,9 @@
  <Reference Include="Debugger">
  <HintPath>G:/LuHaxe/Unity/Example/Assets/Plugins/Debugger.dll</HintPath>
  </Reference>
+ <Reference Include="SyntaxTree.Mono.Cecil">
+ <HintPath>G:/LuHaxe/Unity/Example/Assets/UnityVS/Editor/SyntaxTree.Mono.Cecil.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEngine.Advertisements">
  <HintPath>C:/Users/Machao/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.3/UnityEngine.Advertisements.dll</HintPath>
  </Reference>

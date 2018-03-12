@@ -2,8 +2,8 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Example\Example.cs">
     <Files>
-      <File FileName="Assets\ToLua\Examples\05_LuaCoroutine\TestCoroutine.cs" Line="25" Column="51" />
-      <File FileName="Assets\Example\Example.cs" Line="8" Column="2" />
+      <File FileName="Assets\ToLua\Examples\05_LuaCoroutine\TestCoroutine.cs" Line="1" Column="1" />
+      <File FileName="Assets\Example\Example.cs" Line="23" Column="24" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

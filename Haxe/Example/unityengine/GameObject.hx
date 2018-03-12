@@ -22,11 +22,13 @@
 	SOFTWARE.
  */
 package unityengine;
+import example.Transform;
 
 extern class GameObject {
 	var name:String;
-	var transform:Transform;
+	var transform:example.Transform;
 	static function New(name:String):GameObject;
 	static function CreatePrimitive(name:PrimitiveType):GameObject;
 	function Update():Void;
+	static function Find(name:String):GameObject;
 }

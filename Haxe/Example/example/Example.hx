@@ -23,8 +23,10 @@
  */
 
 package example;
+import unityengine.Object;
 import unityengine.PrimitiveType;
 import unityengine.GameObject;
+import unityengine.Resources;
 
 
 
@@ -37,6 +39,12 @@ class Example{
 		this.cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 		this.cube.transform.position = Vector3.New(3, 0, 0);
+		
+		var canvas = GameObject.Find("Canvas");		
+		var txt = Object.Instantiate(Resources.Load("TextPreb"));
+		txt.transform.parent = canvas.transform;
+		
+		
 		TimerHelper.AddUpdateListener(this, this.Update);
 		
     }
@@ -47,4 +55,5 @@ class Example{
 		this.cube.transform.position = newPos;
 		//trace(this.cube.transform.position);
 	}
+	
 }

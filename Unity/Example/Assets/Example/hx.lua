@@ -182,6 +182,9 @@ example.Example.super = function(self)
   self.cube = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
   self.sphere = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
   self.cube.transform.position = Vector3.New(3,0,0);
+  local canvas = UnityEngine.GameObject.Find("Canvas");
+  local txt = UnityEngine.Object.Instantiate(UnityEngine.Resources.Load("TextPreb"));
+  txt.transform.parent = canvas.transform;
   TimerHelper.AddUpdateListener(self,_hx_bind(self,self.Update));
 end
 example.Example.prototype = _hx_a(
