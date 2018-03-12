@@ -179,7 +179,7 @@ example.Example.new = function()
 end
 example.Example.super = function(self) 
   self.go = UnityEngine.GameObject.New("go");
-  self.go:AddComponent(typeof((UnityEngine.ParticleSystem)));
+  self.go:AddComponent(typeof(UnityEngine.ParticleSystem));
   self.cube = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
   self.sphere = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
   self.cube.transform.position = Vector3.New(3,0,0);
@@ -377,19 +377,6 @@ _hx_bind = function(o,m)
     o._hx__closures[m] = f;
   end
   return f;
-end
-_hx_staticToInstance = function (tab)
-  return setmetatable({}, {
-    __index = function(t,k)
-      if type(rawget(tab,k)) == 'function' then 
-	return function(self,...)
-	  return rawget(tab,k)(...)
-	end
-      else
-	return rawget(tab,k)
-      end
-    end
-  })
 end
 _hx_static_init();
 Main.main()

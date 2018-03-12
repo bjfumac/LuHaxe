@@ -30,6 +30,6 @@ package;
 extern class Global 
 {
 
-	static function typeof(object:Any):Any;
+	static function typeof(object:Class<Dynamic>):Any;
 
 }

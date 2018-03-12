@@ -30,5 +30,5 @@ extern class GameObject {
 	static function CreatePrimitive(name:PrimitiveType):GameObject;
 	function Update():Void;
 	static function Find(name:String):GameObject;
-	function AddComponent(className:String):Component;
+	function AddComponent(className:Any):Component;
 }
