@@ -2,7 +2,7 @@
 setlocal
 ::copy /b header.lua + body.lua hx.lua
 call :FindReplace "unityengine" "UnityEngine" hx.lua
-
+call :FindReplace "Global.typeof(_hx_staticToInstance" "typeof(" hx.lua
 
 exit /b 
 

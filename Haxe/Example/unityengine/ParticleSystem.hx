@@ -21,16 +21,14 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
  */
-package example;
-import Vector3;
+package unityengine;
 
 /**
  * ...
- * @author bjfumac
+ * @author ...
  */
-extern class Transform 
+extern class ParticleSystem 
 {
-	var position:Vector3;	
-	var parent:Transform;
+
 	
 }

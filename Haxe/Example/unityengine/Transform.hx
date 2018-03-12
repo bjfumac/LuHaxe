@@ -21,37 +21,16 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
  */
+package unityengine;
+import Vector3;
 
-package example;
-import unityengine.Object;
-import unityengine.PrimitiveType;
-import unityengine.GameObject;
-import unityengine.Resources;
-import Global.*;
-
-
-class Example{
-	private var go:GameObject;
-	private var cube:GameObject;
-	private var sphere:GameObject;
-    public function new(){
-		this.go = GameObject.New("go");
-		this.go.AddComponent(typeof(unityengine.ParticleSystem));
-		this.cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		this.cube.transform.position = Vector3.New(3, 0, 0);
-		var canvas = GameObject.Find("Canvas");		
-		var txt = Object.Instantiate(Resources.Load("TextPreb"));
-		txt.transform.parent = canvas.transform;
-		TimerHelper.AddUpdateListener(this, this.Update);
-		
-    }
-	
-	public function Update():Void{
-		var pos = this.cube.transform.position;
-		var newPos = Vector3.New(pos.x + 0.01, pos.y, pos.z);
-		this.cube.transform.position = newPos;
-		//trace(this.cube.transform.position);
-	}
+/**
+ * ...
+ * @author bjfumac
+ */
+extern class Transform 
+{
+	var position:Vector3;	
+	var parent:Transform;
 	
 }
