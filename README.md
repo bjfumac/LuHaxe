@@ -9,6 +9,7 @@ LuHaxe是我的一个脑洞概念实现，它的目标是让程序员通过编�
 * 可通过trace输出日志的方式调试Haxe文件，亦可以通过tolua的调试机制调试生成的lua文件。
 * AS、TS、JS程序员可三分钟内上手。
 * 有成品的Haxe库和底层库不依赖tolua，如：[PureMVC(MVC框架)](https://github.com/PureMVC/puremvc-haxe-multicore-framework)、[Enitias(ECS框架)](https://github.com/montonero/entithax)、[Protobuf（序列化）](https://github.com/nitrobin/protohx)、[Bson（序列化）](https://github.com/qifun/json-stream)、[TCP/UDP Socket](https://github.com/MattTuttle/hxnet)等。移植其他语言类库也比较容易。
+* Haxe可输出成多种主流语言，因此前后端通用的战斗逻辑可统一用Haxe进行编写，然后输出成服务器相对应的语言即可。
 
 <br />
 
