@@ -6,6 +6,7 @@ using UnityEditor;
 
 using BindType = ToLuaMenu.BindType;
 using System.Reflection;
+using UnityEngine.UI;
 
 public static class CustomSettings
 {
@@ -146,6 +147,8 @@ public static class CustomSettings
         _GT(typeof(RenderTexture)),
         _GT(typeof(Resources)),     
         _GT(typeof(LuaProfiler)),
+
+        _GT(typeof(Text)),
     };
 
     public static List<Type> dynamicList = new List<Type>()
@@ -170,6 +173,7 @@ public static class CustomSettings
         typeof(BlendWeights),
         typeof(RenderTexture),
         typeof(Rigidbody),
+
     };
 
     //重载函数，相同参数个数，相同位置out参数匹配出问题时, 需要强制匹配解决

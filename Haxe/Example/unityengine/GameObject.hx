@@ -51,5 +51,6 @@ extern class GameObject
 	function BroadcastMessage(methodName:String):Void;
 	function SendMessageUpwards(methodName:String):Void;
 	function SendMessage(methodName:String):Void;
+	function GetComponent<T>(type:Class<T>):T;
 }
 

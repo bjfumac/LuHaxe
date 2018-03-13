@@ -29,12 +29,13 @@ import unityengine.GameObject;
 import unityengine.Resources;
 import Global.*;
 import unityengine.WWW;
-import haxe.io.Bytes;
+import unityengine.ui.Text;
 
 class Example{
 	private var go:GameObject;
 	private var cube:GameObject;
 	private var sphere:GameObject;
+	private var txt:GameObject;
 	
     public function new(){
 		this.go = GameObject.New("go");
@@ -43,7 +44,7 @@ class Example{
 		this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 		this.cube.transform.position = Vector3.New(3, 0, 0);
 		var canvas = GameObject.Find("Canvas");		
-		var txt = Object.Instantiate(Resources.Load("TextPreb"));
+		txt = Object.Instantiate(Resources.Load("TextPreb"));
 		txt.transform.parent = canvas.transform;
 		TimerHelper.AddUpdateListener(this, this.Update);
 		
@@ -63,10 +64,10 @@ class Example{
 	private function CoFunc():Void{
 		var www = WWW.New("http://www.baidu.com");
 		Coroutine.www(www);
-		var lStr = Tolua.tolstring(www.bytes);
-		var str = lStr.sub(0, www.bytesDownloaded);
-		trace("Total Bytes:"+www.bytesDownloaded);
-		trace("URL Content:" + str);
+		var content = DataHelper.WWWtoString(www);
+		txt.GetComponent(typeof(Text)).text = "Bytes Downloaded:" + www.bytesDownloaded;
+		Coroutine.wait(5);
+		txt.GetComponent(typeof(Text)).text = "Coroutine Ended";
 	}
 	
 }

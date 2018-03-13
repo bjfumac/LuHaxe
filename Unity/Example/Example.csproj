@@ -315,6 +315,7 @@
     <Compile Include="Assets\Source\Generate\UnityEngine_CharacterControllerWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_ColliderWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_ComponentWrap.cs" />
+    <Compile Include="Assets\Source\Generate\UnityEngine_EventSystems_UIBehaviourWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_GameObjectWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_InputWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_KeyCodeWrap.cs" />
@@ -345,6 +346,9 @@
     <Compile Include="Assets\Source\Generate\UnityEngine_TimeWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_TrackedReferenceWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_TransformWrap.cs" />
+    <Compile Include="Assets\Source\Generate\UnityEngine_UI_GraphicWrap.cs" />
+    <Compile Include="Assets\Source\Generate\UnityEngine_UI_MaskableGraphicWrap.cs" />
+    <Compile Include="Assets\Source\Generate\UnityEngine_UI_TextWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_WrapModeWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_WWWWrap.cs" />
     <Compile Include="Assets\Source\LuaConst.cs" />
