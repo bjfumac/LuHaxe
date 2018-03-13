@@ -80,6 +80,7 @@ public static class ToLuaExport
     public static string className = string.Empty;
     public static Type type = null;
     public static Type baseType = null;
+    public static string nameSpace = string.Empty;
         
     public static bool isStaticClass = true;    
 
@@ -741,6 +742,45 @@ public static class ToLuaExport
         }
     }
 
+    public static void GenerateHaxe(string dir)
+    {
+#if !EXPORT_INTERFACE
+        Type iterType = typeof(System.Collections.IEnumerator);
+
+        if (type.IsInterface && type != iterType)
+        {
+            return;
+        }
+#endif
+        sb = new StringBuilder();
+        
+        if (wrapClassName == "")
+        {
+            wrapClassName = className;
+        }
+        
+        if (type.IsEnum)
+        {
+            BeginCodeGenHX();
+            GenEnumHX();
+            EndCodeGenHX(dir);
+            return;
+        }
+        
+        InitMethods();
+        InitPropertyList();
+        InitCtorList();
+
+        BeginCodeGenHX();
+        GenRegisterFunctionHX();
+        //GenConstructFunctionHX();
+        GenFieldHX();
+        GenItemPropertyHXFunction();
+        GenHXFunctions();
+
+        EndCodeGenHX(dir);
+    }
+
     public static void Generate(string dir)
     {
 #if !EXPORT_INTERFACE
@@ -791,6 +831,27 @@ public static class ToLuaExport
     //记录所有的导出类型
     public static List<Type> allTypes = new List<Type>();
 
+    static void GenFieldHX()
+    {
+        fields = type.GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);
+        List<FieldInfo> list = new List<FieldInfo>(fields);
+
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            if (IsObsolete(list[i]))
+            {
+                list.RemoveAt(i);
+            }
+        }
+
+        fields = list.ToArray();
+        for(int j = 0; j < fields.Length; j++)
+        {
+            sb.AppendFormat("\t{0}var {1}:{2};\r\n", fields[j].IsStatic ? "static " : "", fields[j].Name, FixTypeHX(fields[j].FieldType.Name));
+        }
+        
+    }
+
     static bool BeDropMethodType(MethodInfo md)
     {
         Type t = md.DeclaringType;
@@ -823,6 +884,24 @@ public static class ToLuaExport
     {
         sb.AppendFormat("public class {0}Wrap\r\n", wrapClassName);
         sb.AppendLineEx("{");
+    }
+
+    static void BeginCodeGenHX()
+    {
+        sb.AppendFormat("package {0};\r\n", String.IsNullOrEmpty(nameSpace) ? "": nameSpace.ToLower());
+        sb.AppendFormat("extern class {0}\r\n", libClassName);
+        sb.AppendLineEx("{");
+    }
+
+    static void EndCodeGenHX(string dir)
+    {
+        sb.AppendLineEx("}\r\n");
+        var newDir = dir + "/hx/" + nameSpace+"/";
+        if (!File.Exists(newDir))
+        {
+            Directory.CreateDirectory(newDir);
+        }
+        SaveHXFile(newDir + libClassName + ".hx");
     }
 
     static void EndCodeGen(string dir)
@@ -1063,6 +1142,61 @@ public static class ToLuaExport
         }
     }
 
+    static void SaveHXFile(string file)
+    {
+        using (StreamWriter textWriter = new StreamWriter(file, false, Encoding.UTF8))
+        {
+            StringBuilder usb = new StringBuilder();
+
+            usb.AppendLineEx(@"/**
+    * MIT License
+
+	Copyright (c) 2018 bjfumac macvsapple@gmail.com
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the ""Software""), to deal
+	in the Software without restriction, including without limitation the rights
+
+    to use, copy, modify, merge, publish, distribute, sublicense, and/ or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+            The above copyright notice and this permission notice shall be included in all
+            copies or substantial portions of the Software.
+
+
+    THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+
+    SOFTWARE.
+    */ ");
+
+            foreach (string str in usingList)
+            {
+                usb.AppendFormat("using {0};\r\n", str);
+            }
+
+
+            if (ambig == ObjAmbig.All)
+            {
+                usb.AppendLineEx("using Object = UnityEngine.Object;");
+            }
+
+            usb.AppendLineEx();
+
+            textWriter.Write(usb.ToString());
+            textWriter.Write(sb.ToString());
+            textWriter.Flush();
+            textWriter.Close();
+        }
+    }
+
     static void SaveFile(string file)
     {        
         using (StreamWriter textWriter = new StreamWriter(file, false, Encoding.UTF8))
@@ -1220,6 +1354,46 @@ public static class ToLuaExport
         }
     }
 
+    static void GenRegisterFuncItemsHX()
+    {
+        //bool isList = type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>);
+        //注册库函数
+        for (int i = 0; i < methods.Count; i++)
+        {
+            _MethodBase m = methods[i];
+            int count = 1;
+
+            if (IsGenericMethod(m.Method))
+            {
+                continue;
+            }
+
+            string name = GetMethodName(m.Method);
+
+            if (!nameCounter.TryGetValue(name, out count))
+            {
+
+
+                nameCounter[name] = 1;
+            }
+            else
+            {
+                nameCounter[name] = count + 1;
+            }
+        }
+        if (ctorList.Count > 0 || type.IsValueType || ctorExtList.Count > 0)
+        {
+            sb.AppendFormat("\tstatic function New():{0};\r\n", libClassName);
+        }
+
+        if (getItems.Count > 0 || setItems.Count > 0)
+        {
+            //sb.AppendLineEx("\t\tL.RegVar(\"this\", _this, null);");
+        }
+
+
+    }
+
     static void GenRegisterOpItems()
     {
         if ((op & MetaOp.Add) != 0)
@@ -1332,6 +1506,55 @@ public static class ToLuaExport
         }
     }
 
+    static void GenRegisterVariablesHX()
+    {
+        if (fields.Length == 0 && props.Length == 0 && events.Length == 0 && isStaticClass && baseType == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < fields.Length; i++)
+        {
+            if (fields[i].IsLiteral || fields[i].IsPrivate || fields[i].IsInitOnly)
+            {
+                if (fields[i].IsLiteral && fields[i].FieldType.IsPrimitive && !fields[i].FieldType.IsEnum)
+                {
+                    double d = Convert.ToDouble(fields[i].GetValue(null));
+                    sb.AppendFormat("\t static inline var {0}:{1};\r\n", fields[i].Name, d);
+                }
+                else
+                {
+                    sb.AppendFormat("\t{0}var {1}:{2};\r\n",fields[i].IsStatic?"static ":"", fields[i].Name, FixTypeHX(fields[i].FieldType.Name));
+                }
+            }
+            else
+            {
+                sb.AppendFormat("\t{0}var {1}:{2};\r\n", fields[i].IsStatic ? "static " : "", fields[i].Name, FixTypeHX(fields[i].FieldType.Name));
+            }
+        }
+
+        for (int i = 0; i < props.Length; i++)
+        {
+            if (props[i].CanRead && props[i].CanWrite && props[i].GetSetMethod(true).IsPublic)
+            {
+                sb.AppendFormat("\tvar {0}:{1};\r\n", props[i].Name, FixTypeHX(props[i].PropertyType.Name));
+            }
+            else if (props[i].CanRead)
+            {
+                sb.AppendFormat("\tvar {0}:{1};\r\n", props[i].Name, FixTypeHX(props[i].PropertyType.Name));
+            }
+            else if (props[i].CanWrite)
+            {
+                sb.AppendFormat("\tvar {0}:{1};\r\n", props[i].Name, FixTypeHX(props[i].PropertyType.Name));
+            }
+        }
+
+        for (int i = 0; i < events.Length; i++)
+        {
+            //sb.AppendFormat("\t\tL.RegVar(\"{0}\", get_{0}, set_{0});\r\n", events[i].Name);
+        }
+    }
+
     static void GenRegisterEventTypes()
     {
         List<Type> list = new List<Type>();
@@ -1415,6 +1638,17 @@ public static class ToLuaExport
         }
 
         sb.AppendLineEx("\t}");
+    }
+
+    static void GenRegisterFunctionHX()
+    {
+       
+
+        GenRegisterFuncItemsHX();
+        //GenRegisterOpItems();
+        GenRegisterVariablesHX();
+        //GenRegisterEventTypes();            
+
     }
 
     static bool IsParams(ParameterInfo param)
@@ -1584,6 +1818,139 @@ public static class ToLuaExport
             set.Add(name);
             GenFunction(m);
         }
+    }
+
+    static void GenHXFunctions()
+    {
+        HashSet<string> set = new HashSet<string>();
+        for (int i = 0; i < methods.Count; i++)
+        {
+            _MethodBase m = methods[i];
+
+            if (m.Name.Contains("op_")) continue;
+
+            if (IsGenericMethod(m.Method))
+            {
+                Debugger.Log("Generic Method {0}.{1} cannot be export to lua", LuaMisc.GetTypeName(type), m.GetTotalName());
+                continue;
+            }
+
+            string name = GetMethodName(m.Method);
+
+            if (nameCounter[name] > 1)
+            {
+                if (!set.Contains(name))
+                {
+                    _MethodBase mi = GenOverrideFuncHX(name);
+
+                    if (mi == null)
+                    {
+                        set.Add(name);
+                        continue;
+                    }
+                    else
+                    {
+                        m = mi;     //非重载函数，或者折叠之后只有一个函数
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            set.Add(name);
+            var returnTypeName = m.GetReturnType().Name;
+            string typeName = FixTypeHX(returnTypeName);
+            ParameterInfo[] paramInfos = m.GetParameters();
+            string paramStr = "";
+            for(var p = 0; p < paramInfos.Length; p++)
+            {
+                paramStr += paramInfos[p].Name + ":" + FixTypeHX(paramInfos[p].ParameterType.Name);
+                if(p < paramInfos.Length - 1)
+                {
+                    paramStr += ", ";
+                }
+            }
+            sb.AppendFormat("\t{0}function {1}({2}):{3};\r\n", m.IsStatic ? "static " : "", m.Name, paramStr, typeName);
+        }
+
+       
+    }
+
+    static string FixTypeHX(string typeName)
+    {
+        var arrIndex = typeName.IndexOf("[]");
+        string aryTypeName;
+        if (arrIndex != -1)
+        {
+            aryTypeName = typeName.Substring(0, arrIndex);
+            aryTypeName = "Array<" + FixTypeHX(aryTypeName) + ">";
+            return aryTypeName;
+        }
+        else
+        {
+            if (typeName == "Boolean")
+            {
+                return "Bool";
+            }
+            else if (typeName == "Type")
+            {
+                return "Any";
+            }
+            else if (typeName == "Single")
+            {
+                return "Float";
+            }
+            else if (typeName == "UInt32")
+            {
+                return "UInt";
+            }
+
+            else if (typeName == "Int32")
+            {
+                return "Int";
+            }
+            else if (typeName == "Int64")
+            {
+                return "Int";
+            }
+            else if (typeName == "Quaternion")
+            {
+                return "Any";
+            }
+            else if (typeName == "Scene")
+            {
+                return "Any";
+            }
+            else if (typeName == "Matrix4x4")
+            {
+                return "Any";
+            }
+            else if (typeName == "IEnumerator")
+            {
+                return "Any";
+            }
+            else if (typeName == "Particle")
+            {
+                return "Any";
+            }
+            else if (typeName == "ParticleSystemCustomData")
+            {
+                return "Any";
+            }
+            else if (typeName.IndexOf("List`") != -1)
+            {
+                return "Any";
+            }
+            else if (typeName.IndexOf("Module") != -1)
+            {
+                return "Any";
+            }
+            return typeName;
+        }
+        
+            
     }
 
     static bool IsSealedType(Type t)
@@ -1909,6 +2276,30 @@ public static class ToLuaExport
     }
 
 
+    static void GenConstructFunctionHX()
+    {
+        if (ctorExtList.Count > 0)
+        {
+            if (HasAttribute(ctorExtList[0], typeof(UseDefinedAttribute)))
+            {
+                sb.AppendFormat("\tstatic function New():{0};\r\n", libClassName);
+                return;
+            }
+        }
+
+        if (ctorList.Count == 0)
+        {
+            if (type.IsValueType)
+            {
+                sb.AppendFormat("\tstatic function New():{0};\r\n", libClassName);
+            }
+
+            return;
+        }
+
+    }
+
+
     //this[] 非静态函数
     static void GenItemPropertyFunction()
     {
@@ -2005,6 +2396,43 @@ public static class ToLuaExport
             EndTry();
             sb.AppendLineEx("\t}");
         }
+    }
+
+    static void GenItemPropertyHXFunction()
+    {
+
+        if (getItems.Count > 0)
+        {
+            sb.AppendLineEx("\r\n");
+            sb.AppendLineEx("\t");
+            for (int i = 0; i < getItems.Count; i++)
+            {
+                var item = getItems[i];
+                if (item.IsStatic)
+                {
+                    sb.AppendLineEx("static ");
+                }
+                sb.AppendFormat("var {0}:{1}",item.Name,item.GetReturnType().Name);
+
+            }
+        }
+        if (setItems.Count > 0)
+        {
+            sb.AppendLineEx("\r\n");
+            sb.AppendLineEx("\t");
+            for (int i = 0; i < setItems.Count; i++)
+            {
+                var item = setItems[i];
+                if (item.IsStatic)
+                {
+                    sb.AppendLineEx("static ");
+                }
+                sb.AppendFormat("var {0}:{1}", item.Name, item.GetReturnType().Name);
+
+            }
+        }
+           
+
     }
 
     static int GetOptionalParamPos(ParameterInfo[] infos)
@@ -2903,6 +3331,33 @@ public static class ToLuaExport
         return null;
     }
 
+    static _MethodBase GenOverrideFuncHX(string name)
+    {
+        List<_MethodBase> list = new List<_MethodBase>();
+
+        for (int i = 0; i < methods.Count; i++)
+        {
+            string curName = GetMethodName(methods[i].Method);
+
+            if (curName == name && !IsGenericMethod(methods[i].Method))
+            {
+                Push(list, methods[i]);
+            }
+        }
+
+        if (list.Count == 1)
+        {
+            return list[0];
+        }
+        else if (list.Count == 0)
+        {
+            return null;
+        }
+
+        
+        return null;
+    }
+
     public static string CombineTypeStr(string space, string name)
     {
         if (string.IsNullOrEmpty(space))
@@ -3761,6 +4216,29 @@ public static class ToLuaExport
         sb.AppendLineEx("\t\tToLua.Push(L, o);");
         sb.AppendLineEx("\t\treturn 1;");
         sb.AppendLineEx("\t}");    
+    }
+
+    static void GenEnumHX()
+    {
+        fields = type.GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);
+        List<FieldInfo> list = new List<FieldInfo>(fields);
+
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            if (IsObsolete(list[i]))
+            {
+                list.RemoveAt(i);
+            }
+        }
+
+        fields = list.ToArray();
+
+       
+
+        for (int i = 0; i < fields.Length; i++)
+        {
+            sb.AppendFormat("\tstatic var {0}:Any;\r\n", fields[i].Name);
+        }
     }
 
     static string CreateDelegate = @"    

@@ -34,6 +34,7 @@ class Example{
 	private var go:GameObject;
 	private var cube:GameObject;
 	private var sphere:GameObject;
+	
     public function new(){
 		this.go = GameObject.New("go");
 		this.go.AddComponent(typeof(unityengine.ParticleSystem));

@@ -382,6 +382,52 @@ public static class ToLuaMenu
         AssetDatabase.Refresh();
     }
 
+    [MenuItem("Lua/Gen Haxe Wrap Files", false, 20)]
+    public static void GenerateHaxeWraps()
+    {
+        if (!beAutoGen && EditorApplication.isCompiling)
+        {
+            EditorUtility.DisplayDialog("警告", "请等待编辑器完成编译再执行此功能", "确定");
+            return;
+        }
+
+        if (!File.Exists(CustomSettings.saveDir))
+        {
+            Directory.CreateDirectory(CustomSettings.saveDir);
+            Directory.CreateDirectory(CustomSettings.saveDir+"/hx");
+        }
+
+        allTypes.Clear();
+        BindType[] typeList = CustomSettings.customTypeList;
+
+        BindType[] list = GenBindTypes(typeList);
+        ToLuaExport.allTypes.AddRange(baseType);
+
+        for (int i = 0; i < list.Length; i++)
+        {
+            ToLuaExport.allTypes.Add(list[i].type);
+        }
+
+        for (int i = 0; i < list.Length; i++)
+        {
+            ToLuaExport.Clear();
+            ToLuaExport.className = list[i].name;
+            ToLuaExport.type = list[i].type;
+            ToLuaExport.isStaticClass = list[i].IsStatic;
+            ToLuaExport.baseType = list[i].baseType;
+            ToLuaExport.wrapClassName = list[i].wrapName;
+            ToLuaExport.libClassName = list[i].libName;
+            ToLuaExport.extendList = list[i].extendList;
+            ToLuaExport.nameSpace = list[i].nameSpace;
+            ToLuaExport.GenerateHaxe(CustomSettings.saveDir);
+        }
+
+        Debug.Log("Generate lua binding files over");
+        ToLuaExport.allTypes.Clear();
+        allTypes.Clear();
+        AssetDatabase.Refresh();
+    }
+
     static HashSet<Type> GetCustomTypeDelegates()
     {
         BindType[] list = CustomSettings.customTypeList;

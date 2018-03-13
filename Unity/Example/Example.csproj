@@ -296,7 +296,6 @@
     <Compile Include="Assets\Source\Generate\LuaBinder.cs" />
     <Compile Include="Assets\Source\Generate\LuaInterface_DebuggerWrap.cs" />
     <Compile Include="Assets\Source\Generate\LuaProfilerWrap.cs" />
-    <Compile Include="Assets\Source\Generate\ScriptsFromFileWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_AnimationBlendModeWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_AnimationClipWrap.cs" />
     <Compile Include="Assets\Source\Generate\UnityEngine_AnimationStateWrap.cs" />
