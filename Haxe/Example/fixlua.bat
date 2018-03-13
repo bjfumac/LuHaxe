@@ -2,8 +2,10 @@
 setlocal
 ::copy /b header.lua + body.lua hx.lua
 call :FindReplace "unityengine" "UnityEngine" hx.lua
+call :FindReplace "Coroutine" "coroutine" hx.lua
 call :FindReplace "Global.typeof" "typeof" hx.lua
-
+call :FindReplace "Global.coroutine" "coroutine" hx.lua
+call :FindReplace "Tolua." "tolua." hx.lua
 exit /b 
 
 :FindReplace <findstr> <replstr> <file>

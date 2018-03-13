@@ -32,16 +32,16 @@ extern class Texture2D
 {
 	static function New():Texture2D;
 	var mipmapCount:Int;
-	var format:TextureFormat;
+	var format:Any;
 	var whiteTexture:Texture2D;
 	var blackTexture:Texture2D;
-	static function CreateExternalTexture(width:Int, height:Int, format:TextureFormat, mipmap:Bool, linear:Bool, nativeTex:IntPtr):Texture2D;
-	function UpdateExternalTexture(nativeTex:IntPtr):Void;
-	function SetPixel(x:Int, y:Int, color:Color):Void;
-	function GetPixel(x:Int, y:Int):Color;
-	function GetPixelBilinear(u:Float, v:Float):Color;
-	function GetRawTextureData():Array<Byte>;
+	static function CreateExternalTexture(width:Int, height:Int, format:Any, mipmap:Bool, linear:Bool, nativeTex:Any):Texture2D;
+	function UpdateExternalTexture(nativeTex:Any):Void;
+	function SetPixel(x:Int, y:Int, Any:Any):Void;
+	function GetPixel(x:Int, y:Int):Any;
+	function GetPixelBilinear(u:Float, v:Float):Any;
+	function GetRawTextureData():Any;
 	function Compress(highQuality:Bool):Void;
-	static function GenerateAtlas(sizes:Array<Vector2>, padding:Int, atlasSize:Int, results:Any):Bool;
+	static function GenerateAtlas(sizes:Array<Any>, padding:Int, atlasSize:Int, results:Any):Bool;
 }
 

@@ -25,11 +25,11 @@ package;
 
 /**
  * ...
- * @author ...
+ * @author bjfumac
  */
-extern class Global 
+extern class Lstring 
 {
 
-	static function typeof(object:Class<Dynamic>):Any;
+	function sub(startIndex:Int, length:Int):String;
 	
 }

@@ -25,11 +25,11 @@ package;
 
 /**
  * ...
- * @author ...
+ * @author bjfumac
  */
-extern class Global 
+extern class Tolua 
 {
 
-	static function typeof(object:Class<Dynamic>):Any;
+	static function tolstring(data:Any):Lstring;
 	
 }

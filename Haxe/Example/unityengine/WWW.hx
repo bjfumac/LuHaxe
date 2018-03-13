@@ -30,18 +30,18 @@
 package unityengine;
 extern class WWW
 {
-	static function New():WWW;
+	static function New(url:String):WWW;
 	var assetBundle:AssetBundle;
-	var bytes:Array<Byte>;
+	var bytes:Array<UInt>;
 	var bytesDownloaded:Int;
 	var error:String;
 	var isDone:Bool;
 	var progress:Float;
-	var responseHeaders:Dictionary`2;
+	var responseHeaders:Any;
 	var text:String;
 	var texture:Texture2D;
 	var textureNonReadable:Texture2D;
-	var threadPriority:ThreadPriority;
+	var threadPriority:Any;
 	var uploadProgress:Float;
 	var url:String;
 	var keepWaiting:Bool;

@@ -34,7 +34,7 @@ extern class AssetBundle
 	var mainAsset:Object;
 	var isStreamedSceneAssetBundle:Bool;
 	static function UnloadAllAssetBundles(unloadAllObjects:Bool):Void;
-	static function GetAllLoadedAssetBundles():IEnumerable`1;
+	static function GetAllLoadedAssetBundles():Any;
 	function Contains(name:String):Bool;
 	function Unload(unloadAllLoadedObjects:Bool):Void;
 	function GetAllAssetNames():Array<String>;

@@ -22,14 +22,19 @@
 	SOFTWARE.
  */
 package;
+import unityengine.WWW;
 
 /**
  * ...
  * @author ...
  */
-extern class Global 
+extern class Coroutine 
 {
 
-	static function typeof(object:Class<Dynamic>):Any;
+	static function www(w:WWW):Void;
+	static function start(func:Void->Void):Any;
+	static function wait(time:Float):Void;
+	static function step():Void;
+	static function stop(handle:Any):Void;
 	
 }
