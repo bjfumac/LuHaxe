@@ -47,7 +47,7 @@ extern class GameObject
 	static function FindWithTag(tag:String):GameObject;
 	static function FindGameObjectsWithTag(tag:String):Array<GameObject>;
 	static function Find(name:String):GameObject;
-	function AddComponent(t:Any):Void;
+	function AddComponent<T>(type:Class<T>):T;
 	function BroadcastMessage(methodName:String):Void;
 	function SendMessageUpwards(methodName:String):Void;
 	function SendMessage(methodName:String):Void;

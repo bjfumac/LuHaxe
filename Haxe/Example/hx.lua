@@ -206,7 +206,7 @@ example.Example.prototype = _hx_a(
     coroutine.www(www);
     local content = DataHelper.WWWtoString(www);
     self.txt:GetComponent(typeof(UnityEngine.UI.Text)).text = "Bytes Downloaded:" .. www.bytesDownloaded;
-    coroutine.wait(5);
+    coroutine.wait(3);
     self.txt:GetComponent(typeof(UnityEngine.UI.Text)).text = "Coroutine Ended";
   end
 )

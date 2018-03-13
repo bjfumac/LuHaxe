@@ -66,7 +66,7 @@ class Example{
 		Coroutine.www(www);
 		var content = DataHelper.WWWtoString(www);
 		txt.GetComponent(typeof(Text)).text = "Bytes Downloaded:" + www.bytesDownloaded;
-		Coroutine.wait(5);
+		Coroutine.wait(3);
 		txt.GetComponent(typeof(Text)).text = "Coroutine Ended";
 	}
 	
