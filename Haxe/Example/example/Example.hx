@@ -38,14 +38,19 @@ class Example{
 	private var txt:GameObject;
 	
     public function new(){
+		//测试GameObject
 		this.go = GameObject.New("go");
 		this.go.AddComponent(typeof(unityengine.ParticleSystem));
 		this.cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 		this.cube.transform.position = Vector3.New(3, 0, 0);
+		
+		//测试Prefab
 		var canvas = GameObject.Find("Canvas");		
-		txt = Object.Instantiate(Resources.Load("TextPreb"));
-		txt.transform.parent = canvas.transform;
+		this.txt = Object.Instantiate(Resources.Load("TextPreb"));
+		this.txt.transform.parent = canvas.transform;
+		
+		//测试Update方法
 		TimerHelper.AddUpdateListener(this, this.Update);
 		
 		//Coroutine 测试协程
@@ -55,19 +60,21 @@ class Example{
     }
 	
 	public function Update():Void{
+		//测试GameObject位移
 		var pos = this.cube.transform.position;
 		var newPos = Vector3.New(pos.x + 0.01, pos.y, pos.z);
 		this.cube.transform.position = newPos;
-		//trace(this.cube.transform.position);
 	}
 	
 	private function CoFunc():Void{
+		//测试网络加载、协程、获取组件
 		var www = WWW.New("http://www.baidu.com");
 		Coroutine.www(www);
 		var content = DataHelper.WWWtoString(www);
-		txt.GetComponent(typeof(Text)).text = "Bytes Downloaded:" + www.bytesDownloaded;
+		trace(content);
+		this.txt.GetComponent(typeof(Text)).text = "Bytes Downloaded:" + www.bytesDownloaded;
 		Coroutine.wait(3);
-		txt.GetComponent(typeof(Text)).text = "Coroutine Ended";
+		this.txt.GetComponent(typeof(Text)).text = "Coroutine Ended";
 	}
 	
 }
