@@ -21,7 +21,7 @@ LuHaxe是我的一个脑洞概念实现，它的目标是让程序员通过编�
 <br />
 
 ## 示例
-```actionscript
+```haxe
 package example;
 import unityengine.Object;
 import unityengine.PrimitiveType;
@@ -38,45 +38,42 @@ class Example{
 	private var txt:GameObject;
 	
     public function new(){
-		//测试GameObject
-		this.go = GameObject.New("go");
-		this.go.AddComponent(typeof(unityengine.ParticleSystem));
-		this.cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-		this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-		this.cube.transform.position = Vector3.New(3, 0, 0);
-		
-		//测试Prefab
-		var canvas = GameObject.Find("Canvas");		
-		this.txt = Object.Instantiate(Resources.Load("TextPreb"));
-		this.txt.transform.parent = canvas.transform;
-		
-		//测试Update方法
-		TimerHelper.AddUpdateListener(this, this.Update);
-		
-		//Coroutine 测试协程
-		Coroutine.start(CoFunc);
-		
-		
+	//测试GameObject
+	this.go = GameObject.New("go");
+	this.go.AddComponent(typeof(unityengine.ParticleSystem));
+	this.cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+	this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+	this.cube.transform.position = Vector3.New(3, 0, 0);
+
+	//测试Prefab
+	var canvas = GameObject.Find("Canvas");		
+	this.txt = Object.Instantiate(Resources.Load("TextPreb"));
+	this.txt.transform.parent = canvas.transform;
+
+	//测试Update方法
+	TimerHelper.AddUpdateListener(this, this.Update);
+
+	//Coroutine 测试协程
+	Coroutine.start(CoFunc);	
     }
 	
-	public function Update():Void{
-		//测试GameObject位移
-		var pos = this.cube.transform.position;
-		var newPos = Vector3.New(pos.x + 0.01, pos.y, pos.z);
-		this.cube.transform.position = newPos;
-	}
-	
-	private function CoFunc():Void{
-		//测试网络加载、协程、获取组件
-		var www = WWW.New("http://www.baidu.com");
-		Coroutine.www(www);
-		var content = DataHelper.WWWtoString(www);
-		trace(content);
-		this.txt.GetComponent(typeof(Text)).text = "Bytes Downloaded:" + www.bytesDownloaded;
-		Coroutine.wait(3);
-		this.txt.GetComponent(typeof(Text)).text = "Coroutine Ended";
-	}
-	
+    public function Update():Void{
+	//测试GameObject位移
+	var pos = this.cube.transform.position;
+	var newPos = Vector3.New(pos.x + 0.01, pos.y, pos.z);
+	this.cube.transform.position = newPos;
+    }
+
+    private function CoFunc():Void{
+	//测试网络加载、协程、获取组件
+	var www = WWW.New("http://www.baidu.com");
+	Coroutine.www(www);
+	var content = DataHelper.WWWtoString(www);
+	trace(content);
+	this.txt.GetComponent(typeof(Text)).text = "Bytes Downloaded:" + www.bytesDownloaded;
+	Coroutine.wait(3);
+	this.txt.GetComponent(typeof(Text)).text = "Coroutine Ended";
+    }
 }
 ```
 <br />
@@ -98,7 +95,7 @@ end
 ```
 
 * Haxe映射文件 (Vector3.hx)
-```actionscript
+```haxe
 
 package;
 
