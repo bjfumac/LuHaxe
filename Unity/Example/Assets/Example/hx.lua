@@ -58,17 +58,42 @@ Enum = _hx_e();
 local Array = _hx_e()
 local DataHelper = _hx_e()
 local Main = _hx_e()
+local Math = _hx_e()
 local String = _hx_e()
 local Std = _hx_e()
+local StringTools = _hx_e()
 local TimerHelper = _hx_e()
 local example = {}
 example.Example = _hx_e()
+local hxnet = {}
+hxnet.interfaces = {}
+hxnet.interfaces.Protocol = _hx_e()
+hxnet.base = {}
+hxnet.base.Protocol = _hx_e()
+hxnet.protocols = {}
+hxnet.protocols.Telnet = _hx_e()
+example.TCPClientHandler = _hx_e()
 local haxe = {}
 haxe.Log = _hx_e()
 haxe.io = {}
+haxe.io.Bytes = _hx_e()
+haxe.io.BytesBuffer = _hx_e()
+haxe.io.Input = _hx_e()
+haxe.io.BytesInput = _hx_e()
+haxe.io.Output = _hx_e()
+haxe.io.BytesOutput = _hx_e()
 haxe.io.Eof = _hx_e()
+haxe.io.Error = _hx_e()
+hxnet.interfaces.Client = _hx_e()
+hxnet.interfaces.Connection = _hx_e()
+hxnet.interfaces.Server = _hx_e()
+hxnet.tcp = {}
+hxnet.tcp.Client = _hx_e()
+hxnet.tcp.Connection = _hx_e()
 local lua = {}
 lua.Boot = _hx_e()
+lua.UserData = _hx_e()
+lua.Thread = _hx_e()
 
 local _hx_bind, _hx_bit, _hx_staticToInstance, _hx_funcToField, _hx_maxn, _hx_print, _hx_apply_self, _hx_box_mr, _hx_bit_clamp, _hx_table, _hx_bit_raw
 
@@ -80,6 +105,7 @@ end
 Array.super = function(self) 
   _hx_tab_array(self,0);
 end
+Array.__name__ = true
 Array.prototype = _hx_a(
   'join', function(self,sep) 
     local tbl = ({});
@@ -112,16 +138,25 @@ Array.prototype = _hx_a(
       do return _gthis[cur_length - 1] end;
     end}) end
   end
+  ,'__class__',  Array
 )
 
 DataHelper.new = {}
+DataHelper.__name__ = true
 DataHelper.WWWtoString = function(www) 
   do return tolua.tolstring(www.bytes):sub(0,www.bytesDownloaded) end;
 end
 
 Main.new = {}
+Main.__name__ = true
 Main.main = function() 
   local d = example.Example.new();
+end
+
+Math.new = {}
+Math.__name__ = true
+Math.isNaN = function(f) 
+  do return f ~= f end;
 end
 
 String.new = function(string) 
@@ -132,6 +167,7 @@ String.new = function(string)
 end
 String.super = function(self,string) 
 end
+String.__name__ = true
 String.__index = function(s,k) 
   if (k == "length") then 
     do return _G.string.len(s) end;
@@ -161,15 +197,78 @@ end
 String.prototype = _hx_a(
   'toString', function(self) 
     do return self end
+  end,
+  'charCodeAt', function(self,index) 
+    do return _G.string.byte(self,index + 1) end
+  end,
+  'substr', function(self,pos,len) 
+    if ((len == nil) or (len > (pos + self.length))) then 
+      len = self.length;
+    else
+      if (len < 0) then 
+        len = self.length + len;
+      end;
+    end;
+    if (pos < 0) then 
+      pos = self.length + pos;
+    end;
+    if (pos < 0) then 
+      pos = 0;
+    end;
+    do return _G.string.sub(self,pos + 1,pos + len) end
   end
+  ,'__class__',  String
 )
 
 Std.new = {}
+Std.__name__ = true
 Std.string = function(s) 
   do return lua.Boot.__string_rec(s) end;
 end
 
+StringTools.new = {}
+StringTools.__name__ = true
+StringTools.isSpace = function(s,pos) 
+  if (((s.length == 0) or (pos < 0)) or (pos >= s.length)) then 
+    do return false end;
+  end;
+  local c = s:charCodeAt(pos);
+  if (not ((c > 8) and (c < 14))) then 
+    do return c == 32 end;
+  else
+    do return true end;
+  end;
+end
+StringTools.ltrim = function(s) 
+  local l = s.length;
+  local r = 0;
+  while ((r < l) and StringTools.isSpace(s,r)) do 
+    r = r + 1;
+    end;
+  if (r > 0) then 
+    do return s:substr(r,l - r) end;
+  else
+    do return s end;
+  end;
+end
+StringTools.rtrim = function(s) 
+  local l = s.length;
+  local r = 0;
+  while ((r < l) and StringTools.isSpace(s,(l - r) - 1)) do 
+    r = r + 1;
+    end;
+  if (r > 0) then 
+    do return s:substr(0,l - r) end;
+  else
+    do return s end;
+  end;
+end
+StringTools.trim = function(s) 
+  do return StringTools.ltrim(StringTools.rtrim(s)) end;
+end
+
 TimerHelper.new = {}
+TimerHelper.__name__ = true
 TimerHelper.AddUpdateListener = function(thisObj,func) 
   local listener = UpdateBeat.CreateListener(thisObj,func,0);
   UpdateBeat.AddListener(UpdateBeat,listener);
@@ -185,23 +284,52 @@ example.Example.new = function()
   return self
 end
 example.Example.super = function(self) 
-  self.go = UnityEngine.GameObject.New("go");
-  self.go:AddComponent(typeof(UnityEngine.ParticleSystem));
-  self.cube = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
-  self.sphere = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
-  self.cube.transform.position = Vector3.New(3,0,0);
-  local canvas = UnityEngine.GameObject.Find("Canvas");
-  self.txt = UnityEngine.Object.Instantiate(UnityEngine.Resources.Load("TextPreb"));
-  self.txt.transform.parent = canvas.transform;
-  self.camera = UnityEngine.GameObject.Find("Main Camera");
-  TimerHelper.AddUpdateListener(self,_hx_bind(self,self.Update));
-  coroutine.start(_hx_bind(self,self.CoFunc));
+  self:TestGameObject();
+  self:TestUGUI();
+  self:TestCoroutine();
+  self:TestSocket();
 end
+example.Example.__name__ = true
 example.Example.prototype = _hx_a(
   'Update', function(self) 
+    self:MoveCube();
+    self:FollowCube();
+    self:HandleSocket();
+  end,
+  'TestGameObject', function(self) 
+    self.go = UnityEngine.GameObject.New("go");
+    self.go:AddComponent(typeof(UnityEngine.ParticleSystem));
+    self.cube = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
+    self.sphere = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere);
+    self.cube.transform.position = Vector3.New(3,0,0);
+  end,
+  'TestUGUI', function(self) 
+    local canvas = UnityEngine.GameObject.Find("Canvas");
+    self.txt = UnityEngine.Object.Instantiate(UnityEngine.Resources.Load("TextPreb"));
+    self.txt.transform.parent = canvas.transform;
+    self.camera = UnityEngine.GameObject.Find("Main Camera");
+  end,
+  'TestCoroutine', function(self) 
+    TimerHelper.AddUpdateListener(self,_hx_bind(self,self.Update));
+    coroutine.start(_hx_bind(self,self.CoFunc));
+  end,
+  'TestSocket', function(self) 
+    self.client = hxnet.tcp.Client.new();
+    self.client:set_protocol(example.TCPClientHandler.new());
+    self.client:connect("localhost",4000);
+    self.client:set_blocking(false);
+  end,
+  'HandleSocket', function(self) 
+    self.client:update();
+    local _this = self.client;
+    haxe.Log.trace("Network Connected = " .. Std.string((_this.client ~= nil) and (_this.protocol ~= nil)),_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="Example.hx",lineNumber=91,className="example.Example",methodName="HandleSocket"}));
+  end,
+  'MoveCube', function(self) 
     local pos = self.cube.transform.position;
     local newPos = Vector3.New(pos.x + 0.01,pos.y,pos.z);
     self.cube.transform.position = newPos;
+  end,
+  'FollowCube', function(self) 
     local camPos = self.cube.transform.position:Add(Vector3.up:Mul(5)):Sub(self.cube.transform.forward:Mul(5));
     self.camera.transform.position = camPos;
     self.camera.transform:LookAt(self.cube.transform);
@@ -210,14 +338,290 @@ example.Example.prototype = _hx_a(
     local www = UnityEngine.WWW.New("http://www.baidu.com");
     coroutine.www(www);
     local content = DataHelper.WWWtoString(www);
-    haxe.Log.trace(content,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="Example.hx",lineNumber=85,className="example.Example",methodName="CoFunc"}));
+    haxe.Log.trace(content,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="Example.hx",lineNumber=113,className="example.Example",methodName="CoFunc"}));
     self.txt:GetComponent(typeof(UnityEngine.UI.Text)).text = "Bytes Downloaded:" .. www.bytesDownloaded;
     coroutine.wait(3);
     self.txt:GetComponent(typeof(UnityEngine.UI.Text)).text = "Coroutine Ended";
   end
+  ,'__class__',  example.Example
 )
 
+hxnet.interfaces.Protocol.new = {}
+hxnet.interfaces.Protocol.__name__ = true
+hxnet.interfaces.Protocol.prototype = _hx_a(
+  
+  '__class__',  hxnet.interfaces.Protocol
+)
+
+hxnet.base.Protocol.new = function() 
+  local self = _hx_new(hxnet.base.Protocol.prototype)
+  hxnet.base.Protocol.super(self)
+  return self
+end
+hxnet.base.Protocol.super = function(self) 
+  self._packetPos = 0
+  self._packetLength = self._packetPos;
+end
+hxnet.base.Protocol.__name__ = true
+hxnet.base.Protocol.__interfaces__ = {hxnet.interfaces.Protocol}
+hxnet.base.Protocol.prototype = _hx_a(
+  'isConnected', function(self) 
+    if (self.cnx ~= nil) then 
+      do return self.cnx:isOpen() end;
+    else
+      do return false end;
+    end;
+  end,
+  'dataReceived', function(self,input) 
+    if (self._packetPos > 0) then 
+      local finish = true;
+      local byte = 0;
+      while (finish) do 
+        local _hx_expected_result = {}
+        local _hx_status, _hx_result = pcall(function() 
+        
+            byte = input:readByte();
+           return _hx_expected_result end)
+         if not _hx_status then 
+          local _hx_1 = _hx_result
+          if( lua.Boot.__instanceof(_hx_1,haxe.io.Eof) ) then 
+            local e = _hx_1
+            finish = false;
+          else _G.error(_hx_1)
+          end
+         elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+        self._packet.b[self._packetPos] = _hx_bit.band(byte,255);
+        local tmp = self;
+        tmp._packetPos = tmp._packetPos + 1;
+        if (self._packetPos >= self._packetLength) then 
+          local input1 = haxe.io.BytesInput.new(self._packet);
+          self:packetReceived(input1);
+          self._packetPos = 0;
+          break;
+        end;
+        end;
+    end;
+    while (self:initPacket(input)) do 
+      local finish1 = true;
+      local byte1 = 0;
+      while (finish1) do 
+        local _hx_expected_result = {}
+        local _hx_status, _hx_result = pcall(function() 
+        
+            byte1 = input:readByte();
+           return _hx_expected_result end)
+         if not _hx_status then 
+          local _hx_2 = _hx_result
+          if( lua.Boot.__instanceof(_hx_2,haxe.io.Eof) ) then 
+            local e1 = _hx_2
+            finish1 = false;
+          else _G.error(_hx_2)
+          end
+         elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+        self._packet.b[self._packetPos] = _hx_bit.band(byte1,255);
+        local tmp1 = self;
+        tmp1._packetPos = tmp1._packetPos + 1;
+        if (self._packetPos >= self._packetLength) then 
+          local input2 = haxe.io.BytesInput.new(self._packet);
+          self:packetReceived(input2);
+          self._packetPos = 0;
+          break;
+        end;
+        end;
+      end;
+  end,
+  'packetReceived', function(self,input) 
+  end,
+  'initPacket', function(self,input) 
+    local _hx_expected_result = {}
+    local _hx_status, _hx_result = pcall(function() 
+    
+        self._packetLength = input:readInt32();
+        if (self._packetLength == 0) then 
+          do return false end;
+        end;
+        self._packet = haxe.io.Bytes.alloc(self._packetLength);
+       return _hx_expected_result end)
+     if not _hx_status then 
+      local _hx_1 = _hx_result
+      if( lua.Boot.__instanceof(_hx_1,haxe.io.Eof) ) then 
+        local e = _hx_1
+        do return false end;
+      else
+      local e1 = _hx_1
+      haxe.Log.trace(e1,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="Protocol.hx",lineNumber=52,className="hxnet.base.Protocol",methodName="initPacket"}));
+      do return false end;
+       end 
+     elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+    do return true end
+  end,
+  'readPacket', function(self,input) 
+    local finish = true;
+    local byte = 0;
+    while (finish) do 
+      local _hx_expected_result = {}
+      local _hx_status, _hx_result = pcall(function() 
+      
+          byte = input:readByte();
+         return _hx_expected_result end)
+       if not _hx_status then 
+        local _hx_1 = _hx_result
+        if( lua.Boot.__instanceof(_hx_1,haxe.io.Eof) ) then 
+          local e = _hx_1
+          finish = false;
+        else _G.error(_hx_1)
+        end
+       elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+      self._packet.b[self._packetPos] = _hx_bit.band(byte,255);
+      local tmp = self;
+      tmp._packetPos = tmp._packetPos + 1;
+      if (self._packetPos >= self._packetLength) then 
+        local input1 = haxe.io.BytesInput.new(self._packet);
+        self:packetReceived(input1);
+        self._packetPos = 0;
+        break;
+      end;
+      end;
+    do return finish end
+  end,
+  'onConnect', function(self,cnx) 
+    self.cnx = cnx;
+  end,
+  'onAccept', function(self,cnx,server) 
+    self.cnx = cnx;
+    self.server = server;
+  end,
+  'loseConnection', function(self,reason) 
+    self.cnx = nil;
+  end
+  ,'__class__',  hxnet.base.Protocol
+)
+
+hxnet.protocols.Telnet.new = function() 
+  local self = _hx_new(hxnet.protocols.Telnet.prototype)
+  hxnet.protocols.Telnet.super(self)
+  return self
+end
+hxnet.protocols.Telnet.super = function(self) 
+  hxnet.base.Protocol.super(self);
+end
+hxnet.protocols.Telnet.__name__ = true
+hxnet.protocols.Telnet.prototype = _hx_a(
+  'dataReceived', function(self,input) 
+    local line = input:readLine();
+    local buffer = "";
+    local i = 0;
+    local last = 0;
+    while (i < line.length) do 
+      if (line:charCodeAt(i) == 255) then 
+        buffer = buffer .. line:substr(last,i - last);
+        i = i + 1;
+        local command = line:charCodeAt(i);
+        if (command ~= 241) then 
+          if (command == 250) then 
+            i = i + 1;
+            local code = line:charCodeAt(i);
+            local data = haxe.io.BytesOutput.new();
+            while (not ((line:charCodeAt(i) == 255) and (line:charCodeAt(i + 1) == 240))) do 
+              i = i + 1;
+              data:writeByte(line:charCodeAt(i));
+              end;
+            self:handleIACData(code,data:getBytes());
+            i = i + 1;
+          else
+            i = i + 1;
+            self:handleIAC(command,line:charCodeAt(i));
+          end;
+        end;
+        last = i + 1;
+      end;
+      i = i + 1;
+      end;
+    buffer = buffer .. line:substr(last,line.length - last);
+    buffer = StringTools.trim(buffer);
+    if (buffer ~= "") then 
+      if (self.promptCallback ~= nil) then 
+        local callback = self.promptCallback;
+        if (callback(buffer)) then 
+          if (self.promptCallback == callback) then 
+            self.promptCallback = nil;
+          end;
+        else
+          self.cnx:writeBytes(self.promptBytes);
+        end;
+        do return end;
+      end;
+      self:lineReceived(buffer);
+    end;
+  end,
+  'iacSend', function(self,command,code) 
+    local out = haxe.io.BytesOutput.new();
+    out:writeByte(255);
+    out:writeByte(command);
+    out:writeByte(code);
+    self.cnx:writeBytes(out:getBytes());
+  end,
+  'handleIACData', function(self,code,data) 
+  end,
+  'handleIAC', function(self,command,code) 
+  end,
+  'writeLine', function(self,data) 
+    self.cnx:writeBytes(haxe.io.Bytes.ofString(data .. "\r\n"));
+  end,
+  'echo', function(self,show) 
+    if (show == nil) then 
+      show = true;
+    end;
+    local out = haxe.io.BytesOutput.new();
+    out:writeByte(255);
+    out:writeByte((function() 
+      local _hx_1
+      if (show) then 
+      _hx_1 = 252; else 
+      _hx_1 = 251; end
+      return _hx_1
+    end )());
+    out:writeByte(1);
+    self.cnx:writeBytes(out:getBytes());
+  end,
+  'prompt', function(self,prompt,callback) 
+    self.promptBytes = haxe.io.Bytes.ofString(prompt .. " ");
+    self.promptCallback = _hx_funcToField(callback);
+    self.cnx:writeBytes(self.promptBytes);
+  end,
+  'lineReceived', function(self,line) 
+  end
+  ,'__class__',  hxnet.protocols.Telnet
+)
+hxnet.protocols.Telnet.__super__ = hxnet.base.Protocol
+setmetatable(hxnet.protocols.Telnet.prototype,{__index=hxnet.base.Protocol.prototype})
+
+example.TCPClientHandler.new = function() 
+  local self = _hx_new(example.TCPClientHandler.prototype)
+  example.TCPClientHandler.super(self)
+  return self
+end
+example.TCPClientHandler.super = function(self) 
+  hxnet.protocols.Telnet.super(self);
+end
+example.TCPClientHandler.__name__ = true
+example.TCPClientHandler.prototype = _hx_a(
+  'lineReceived', function(self,line) 
+    haxe.Log.trace("Data received: " .. line,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="TCPClientHandler.hx",lineNumber=36,className="example.TCPClientHandler",methodName="lineReceived"}));
+  end,
+  'packetReceived', function(self,input) 
+    haxe.Log.trace("Data received: " .. Std.string(input),_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="TCPClientHandler.hx",lineNumber=41,className="example.TCPClientHandler",methodName="packetReceived"}));
+  end,
+  'loseConnection', function(self,reason) 
+    haxe.Log.trace("Connection lost: " .. reason,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="TCPClientHandler.hx",lineNumber=46,className="example.TCPClientHandler",methodName="loseConnection"}));
+  end
+  ,'__class__',  example.TCPClientHandler
+)
+example.TCPClientHandler.__super__ = hxnet.protocols.Telnet
+setmetatable(example.TCPClientHandler.prototype,{__index=hxnet.protocols.Telnet.prototype})
+
 haxe.Log.new = {}
+haxe.Log.__name__ = true
 haxe.Log.trace = function(v,infos) 
   local str = nil;
   if (infos ~= nil) then 
@@ -234,6 +638,249 @@ haxe.Log.trace = function(v,infos)
   _hx_print(str);
 end
 
+haxe.io.Bytes.new = function(length,b) 
+  local self = _hx_new(haxe.io.Bytes.prototype)
+  haxe.io.Bytes.super(self,length,b)
+  return self
+end
+haxe.io.Bytes.super = function(self,length,b) 
+  self.length = length;
+  self.b = b;
+end
+haxe.io.Bytes.__name__ = true
+haxe.io.Bytes.alloc = function(length) 
+  local a = Array.new();
+  local _g1 = 0;
+  local _g = length;
+  while (_g1 < _g) do 
+    _g1 = _g1 + 1;
+    local i = _g1 - 1;
+    a:push(0);
+    end;
+  do return haxe.io.Bytes.new(length,a) end;
+end
+haxe.io.Bytes.ofString = function(s) 
+  local _g = _hx_tab_array({ }, 0);
+  local _g2 = 0;
+  local _g1 = s.length;
+  while (_g2 < _g1) do 
+    _g2 = _g2 + 1;
+    local c = _g2 - 1;
+    _g:push(_G.string.byte(s,c + 1));
+    end;
+  local bytes = _g;
+  do return haxe.io.Bytes.new(bytes.length,bytes) end;
+end
+haxe.io.Bytes.prototype = _hx_a(
+  'getString', function(self,pos,len) 
+    if (((pos < 0) or (len < 0)) or ((pos + len) > self.length)) then 
+      _G.error(haxe.io.Error.OutsideBounds,0);
+    end;
+    local b = self.b.length;
+    local begin = lua.Boot.__cast((function() 
+      local _hx_1
+      if (Math.isNaN(pos) or Math.isNaN(b)) then 
+      _hx_1 = (0/0); else 
+      _hx_1 = _G.math.min(pos,b); end
+      return _hx_1
+    end )() , Int);
+    local a = pos + len;
+    local b1 = self.b.length;
+    local _end = lua.Boot.__cast((function() 
+      local _hx_2
+      if (Math.isNaN(a) or Math.isNaN(b1)) then 
+      _hx_2 = (0/0); else 
+      _hx_2 = _G.math.min(a,b1); end
+      return _hx_2
+    end )() , Int);
+    local _g = _hx_tab_array({ }, 0);
+    local _g2 = begin;
+    local _g1 = _end;
+    while (_g2 < _g1) do 
+      _g2 = _g2 + 1;
+      local i = _g2 - 1;
+      _g:push(_G.string.char(self.b[i]));
+      end;
+    do return _g:join("") end
+  end,
+  'toString', function(self) 
+    do return self:getString(0,self.length) end
+  end
+  ,'__class__',  haxe.io.Bytes
+)
+
+haxe.io.BytesBuffer.new = function() 
+  local self = _hx_new(haxe.io.BytesBuffer.prototype)
+  haxe.io.BytesBuffer.super(self)
+  return self
+end
+haxe.io.BytesBuffer.super = function(self) 
+  self.b = Array.new();
+end
+haxe.io.BytesBuffer.__name__ = true
+haxe.io.BytesBuffer.prototype = _hx_a(
+  'getBytes', function(self) 
+    local bytes = haxe.io.Bytes.new(self.b.length,self.b);
+    self.b = nil;
+    do return bytes end
+  end
+  ,'__class__',  haxe.io.BytesBuffer
+)
+
+haxe.io.Input.new = {}
+haxe.io.Input.__name__ = true
+haxe.io.Input.prototype = _hx_a(
+  'readByte', function(self) 
+    _G.error("Not implemented",0);
+  end,
+  'readLine', function(self) 
+    local buf = haxe.io.BytesBuffer.new();
+    local last;
+    local s;
+    local _hx_expected_result = {}
+    local _hx_status, _hx_result = pcall(function() 
+    
+        while (true) do 
+          last = self:readByte();
+          if (not (last ~= 10)) then 
+            break;
+          end;
+          buf.b:push(last);
+          end;
+        s = buf:getBytes():toString();
+        if (s:charCodeAt(s.length - 1) == 13) then 
+          s = s:substr(0,-1);
+        end;
+       return _hx_expected_result end)
+     if not _hx_status then 
+      local _hx_1 = _hx_result
+      if( lua.Boot.__instanceof(_hx_1,haxe.io.Eof) ) then 
+        local e = _hx_1
+        s = buf:getBytes():toString();
+        if (s.length == 0) then 
+          _G.error(e,0);
+        end;
+      else _G.error(_hx_1)
+      end
+     elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+    do return s end
+  end,
+  'readInt32', function(self) 
+    local ch1 = self:readByte();
+    local ch2 = self:readByte();
+    local ch3 = self:readByte();
+    local ch4 = self:readByte();
+    local n = (function() 
+      local _hx_1
+      if (self.bigEndian) then 
+      _hx_1 = _hx_bit.bor(_hx_bit.bor(_hx_bit.bor(ch4,_hx_bit.lshift(ch3,8)),_hx_bit.lshift(ch2,16)),_hx_bit.lshift(ch1,24)); else 
+      _hx_1 = _hx_bit.bor(_hx_bit.bor(_hx_bit.bor(ch1,_hx_bit.lshift(ch2,8)),_hx_bit.lshift(ch3,16)),_hx_bit.lshift(ch4,24)); end
+      return _hx_1
+    end )();
+    do return _hx_bit_clamp(n) end
+  end
+  ,'__class__',  haxe.io.Input
+)
+
+haxe.io.BytesInput.new = function(b,pos,len) 
+  local self = _hx_new(haxe.io.BytesInput.prototype)
+  haxe.io.BytesInput.super(self,b,pos,len)
+  return self
+end
+haxe.io.BytesInput.super = function(self,b,pos,len) 
+  if (pos == nil) then 
+    pos = 0;
+  end;
+  if (len == nil) then 
+    len = b.length - pos;
+  end;
+  if (((pos < 0) or (len < 0)) or ((pos + len) > b.length)) then 
+    _G.error(haxe.io.Error.OutsideBounds,0);
+  end;
+  self.b = b.b;
+  self.pos = pos;
+  self.len = len;
+  self.totlen = len;
+end
+haxe.io.BytesInput.__name__ = true
+haxe.io.BytesInput.prototype = _hx_a(
+  'readByte', function(self) 
+    if (self.len == 0) then 
+      _G.error(haxe.io.Eof.new(),0);
+    end;
+    self.len = self.len - 1;
+    do return self.b[(function() 
+    local _hx_obj = self;
+    local _hx_fld = 'pos';
+    local _ = _hx_obj[_hx_fld];
+    _hx_obj[_hx_fld] = _hx_obj[_hx_fld]  + 1;
+     return _;
+     end)()] end
+  end
+  ,'__class__',  haxe.io.BytesInput
+)
+haxe.io.BytesInput.__super__ = haxe.io.Input
+setmetatable(haxe.io.BytesInput.prototype,{__index=haxe.io.Input.prototype})
+
+haxe.io.Output.new = {}
+haxe.io.Output.__name__ = true
+haxe.io.Output.prototype = _hx_a(
+  'writeByte', function(self,c) 
+    _G.error("Not implemented",0);
+  end,
+  'writeBytes', function(self,s,pos,len) 
+    if (((pos < 0) or (len < 0)) or ((pos + len) > s.length)) then 
+      _G.error(haxe.io.Error.OutsideBounds,0);
+    end;
+    local b = s.b;
+    local k = len;
+    while (k > 0) do 
+      self:writeByte(b[pos]);
+      pos = pos + 1;
+      k = k - 1;
+      end;
+    do return len end
+  end
+  ,'__class__',  haxe.io.Output
+)
+
+haxe.io.BytesOutput.new = function() 
+  local self = _hx_new(haxe.io.BytesOutput.prototype)
+  haxe.io.BytesOutput.super(self)
+  return self
+end
+haxe.io.BytesOutput.super = function(self) 
+  self.b = haxe.io.BytesBuffer.new();
+end
+haxe.io.BytesOutput.__name__ = true
+haxe.io.BytesOutput.prototype = _hx_a(
+  'writeByte', function(self,c) 
+    self.b.b:push(c);
+  end,
+  'writeBytes', function(self,buf,pos,len) 
+    local _this = self.b;
+    if (((pos < 0) or (len < 0)) or ((pos + len) > buf.length)) then 
+      _G.error(haxe.io.Error.OutsideBounds,0);
+    end;
+    local b1 = _this.b;
+    local b2 = buf.b;
+    local _g1 = pos;
+    local _g = pos + len;
+    while (_g1 < _g) do 
+      _g1 = _g1 + 1;
+      local i = _g1 - 1;
+      _this.b:push(b2[i]);
+      end;
+    do return len end
+  end,
+  'getBytes', function(self) 
+    do return self.b:getBytes() end
+  end
+  ,'__class__',  haxe.io.BytesOutput
+)
+haxe.io.BytesOutput.__super__ = haxe.io.Output
+setmetatable(haxe.io.BytesOutput.prototype,{__index=haxe.io.Output.prototype})
+
 haxe.io.Eof.new = function() 
   local self = _hx_new(haxe.io.Eof.prototype)
   haxe.io.Eof.super(self)
@@ -241,13 +888,273 @@ haxe.io.Eof.new = function()
 end
 haxe.io.Eof.super = function(self) 
 end
+haxe.io.Eof.__name__ = true
 haxe.io.Eof.prototype = _hx_a(
   'toString', function(self) 
     do return "Eof" end
   end
+  ,'__class__',  haxe.io.Eof
+)
+_hxClasses["haxe.io.Error"] = { __ename__ = true, __constructs__ = _hx_tab_array({[0]="Blocked","Overflow","OutsideBounds","Custom"},4)}
+haxe.io.Error = _hxClasses["haxe.io.Error"];
+haxe.io.Error.Blocked = _hx_tab_array({[0]="Blocked",0,__enum__ = haxe.io.Error},2)
+
+haxe.io.Error.Overflow = _hx_tab_array({[0]="Overflow",1,__enum__ = haxe.io.Error},2)
+
+haxe.io.Error.OutsideBounds = _hx_tab_array({[0]="OutsideBounds",2,__enum__ = haxe.io.Error},2)
+
+haxe.io.Error.Custom = function(e) local _x = _hx_tab_array({[0]="Custom",3,e,__enum__=haxe.io.Error}, 3); return _x; end 
+
+hxnet.interfaces.Client.new = {}
+hxnet.interfaces.Client.__name__ = true
+hxnet.interfaces.Client.prototype = _hx_a(
+  
+  '__class__',  hxnet.interfaces.Client
+)
+
+hxnet.interfaces.Connection.new = {}
+hxnet.interfaces.Connection.__name__ = true
+hxnet.interfaces.Connection.prototype = _hx_a(
+  
+  '__class__',  hxnet.interfaces.Connection
+)
+
+hxnet.interfaces.Server.new = {}
+hxnet.interfaces.Server.__name__ = true
+hxnet.interfaces.Server.prototype = _hx_a(
+  
+  '__class__',  hxnet.interfaces.Server
+)
+
+hxnet.tcp.Client.new = function() 
+  local self = _hx_new(hxnet.tcp.Client.prototype)
+  hxnet.tcp.Client.super(self)
+  return self
+end
+hxnet.tcp.Client.super = function(self) 
+  self.blocking = true;
+  self.buffer = haxe.io.Bytes.alloc(8192);
+end
+hxnet.tcp.Client.__name__ = true
+hxnet.tcp.Client.__interfaces__ = {hxnet.interfaces.Client}
+hxnet.tcp.Client.prototype = _hx_a(
+  'connect', function(self,hostname,port) 
+    if (port == nil) then 
+      port = 12800;
+    end;
+    local _hx_expected_result = {}
+    local _hx_status, _hx_result = pcall(function() 
+    
+        self.client = sys.net.Socket.new();
+        if (hostname == nil) then 
+          hostname = sys.net.Host.localhost();
+        end;
+        self.client:connect(sys.net.Host.new(hostname),port);
+        self.client:setBlocking(self.blocking);
+        self.readSockets = _hx_tab_array({[0]=self.client }, 1);
+        if (self.protocol ~= nil) then 
+          self.protocol:onConnect(hxnet.tcp.Connection.new(self.client));
+        end;
+       return _hx_expected_result end)
+     if not _hx_status then 
+      local _hx_1 = _hx_result
+      local e = _hx_1
+      haxe.Log.trace(e,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="Client.hx",lineNumber=47,className="hxnet.tcp.Client",methodName="connect"}));
+      self.client = nil;
+     elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+  end,
+  'update', function(self,timeout) 
+    if (timeout == nil) then 
+      timeout = 0;
+    end;
+    if (not ((self.client ~= nil) and (self.protocol ~= nil))) then 
+      do return end;
+    end;
+    local _hx_expected_result = {}
+    local _hx_status, _hx_result = pcall(function() 
+    
+        if (self.blocking) then 
+          self.protocol:dataReceived(self.client.input);
+        else
+          local select = sys.net.Socket.select(self.readSockets,nil,nil,timeout);
+          local _g = 0;
+          local _g1 = select.read;
+          while (_g < _g1.length) do 
+            local socket = _g1[_g];
+            _g = _g + 1;
+            self:readSocket(socket);
+            end;
+        end;
+       return _hx_expected_result end)
+     if not _hx_status then 
+      local _hx_1 = _hx_result
+      if( lua.Boot.__instanceof(_hx_1,haxe.io.Eof) ) then 
+        local e = _hx_1
+        self.protocol:loseConnection("disconnected");
+        self.client:close();
+        self.client = nil;
+      else _G.error(_hx_1)
+      end
+     elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+  end,
+  'readSocket', function(self,socket) 
+    local byte = 0;
+    local bytesReceived = 0;
+    local len = self.buffer.length;
+    while (bytesReceived < len) do 
+      local _hx_expected_result = {}
+      local _hx_status, _hx_result = pcall(function() 
+      
+          byte = socket.input:readByte();
+         return _hx_expected_result end)
+       if not _hx_status then 
+        local _hx_1 = _hx_result
+        local e = _hx_1
+        if (lua.Boot.__instanceof(e,haxe.io.Eof) or (e == haxe.io.Error.Blocked)) then 
+          self.buffer.b[bytesReceived] = _hx_bit.band(byte,255);
+          break;
+        end;
+       elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+      self.buffer.b[bytesReceived] = _hx_bit.band(byte,255);
+      bytesReceived = bytesReceived + 1;
+      end;
+    if (bytesReceived > 0) then 
+      self.protocol:dataReceived(haxe.io.BytesInput.new(self.buffer,0,bytesReceived));
+    end;
+  end,
+  'close', function(self) 
+    self.client:close();
+    self.client = nil;
+    self.protocol:loseConnection();
+    self:set_protocol(nil);
+  end,
+  'get_connected', function(self) 
+    if (self.client ~= nil) then 
+      do return self.protocol ~= nil end;
+    else
+      do return false end;
+    end;
+  end,
+  'set_blocking', function(self,value) 
+    if (self.blocking == value) then 
+      do return value end;
+    end;
+    if (self.client ~= nil) then 
+      self.client:setBlocking(value);
+    end;
+    self.blocking = value do return self.blocking end
+  end,
+  'set_protocol', function(self,value) 
+    if ((self.client ~= nil) and (value ~= nil)) then 
+      value:onConnect(hxnet.tcp.Connection.new(self.client));
+    end;
+    self.protocol = value do return self.protocol end
+  end
+  ,'__class__',  hxnet.tcp.Client
+)
+
+hxnet.tcp.Connection.new = function(socket) 
+  local self = _hx_new(hxnet.tcp.Connection.prototype)
+  hxnet.tcp.Connection.super(self,socket)
+  return self
+end
+hxnet.tcp.Connection.super = function(self,socket) 
+  self.socket = socket;
+end
+hxnet.tcp.Connection.__name__ = true
+hxnet.tcp.Connection.__interfaces__ = {hxnet.interfaces.Connection}
+hxnet.tcp.Connection.prototype = _hx_a(
+  'isOpen', function(self) 
+    do return self.socket ~= nil end
+  end,
+  'writeBytes', function(self,bytes) 
+    local _hx_expected_result = {}
+    local _hx_status, _hx_result = pcall(function() 
+    
+        self.socket.output:writeBytes(bytes,0,bytes.length);
+       return _hx_expected_result end)
+     if not _hx_status then 
+      local _hx_1 = _hx_result
+      local e = _hx_1
+      do return false end;
+     elseif _hx_result ~= _hx_expected_result then return _hx_result end;
+    do return true end
+  end,
+  'close', function(self) 
+    self.socket:close();
+    self.socket = nil;
+  end
+  ,'__class__',  hxnet.tcp.Connection
 )
 
 lua.Boot.new = {}
+lua.Boot.__name__ = true
+lua.Boot.getClass = function(o) 
+  if (lua.Boot.__instanceof(o,Array)) then 
+    do return Array end;
+  else
+    local cl = o.__class__;
+    if (cl ~= nil) then 
+      do return cl end;
+    else
+      do return nil end;
+    end;
+  end;
+end
+lua.Boot.__instanceof = function(o,cl) 
+  if (cl == nil) then 
+    do return false end;
+  end;
+  local cl1 = cl;
+  if (cl1) == Array then 
+    do return lua.Boot.isArray(o) end;
+  elseif (cl1) == Bool then 
+    do return _G.type(o) == "boolean" end;
+  elseif (cl1) == Dynamic then 
+    do return true end;
+  elseif (cl1) == Float then 
+    do return _G.type(o) == "number" end;
+  elseif (cl1) == Int then 
+    if (_G.type(o) == "number") then 
+      do return _hx_bit_clamp(o) == o end;
+    else
+      do return false end;
+    end;
+  elseif (cl1) == String then 
+    do return _G.type(o) == "string" end;
+  elseif (cl1) == _G.table then 
+    do return _G.type(o) == "table" end;
+  elseif (cl1) == lua.Thread then 
+    do return _G.type(o) == "thread" end;
+  elseif (cl1) == lua.UserData then 
+    do return _G.type(o) == "userdata" end;else
+  if (((o ~= nil) and (_G.type(o) == "table")) and (_G.type(cl) == "table")) then 
+    if (lua.Boot.extendsOrImplements(lua.Boot.getClass(o),cl)) then 
+      do return true end;
+    end;
+    if ((function() 
+      local _hx_1
+      if (cl == Class) then 
+      _hx_1 = o.__name__ ~= nil; else 
+      _hx_1 = false; end
+      return _hx_1
+    end )()) then 
+      do return true end;
+    end;
+    if ((function() 
+      local _hx_2
+      if (cl == Enum) then 
+      _hx_2 = o.__ename__ ~= nil; else 
+      _hx_2 = false; end
+      return _hx_2
+    end )()) then 
+      do return true end;
+    end;
+    do return o.__enum__ == cl end;
+  else
+    do return false end;
+  end; end;
+end
 lua.Boot.isArray = function(o) 
   if (_G.type(o) == "table") then 
     if ((o.__enum__ == nil) and (_G.getmetatable(o) ~= nil)) then 
@@ -257,6 +1164,13 @@ lua.Boot.isArray = function(o)
     end;
   else
     do return false end;
+  end;
+end
+lua.Boot.__cast = function(o,t) 
+  if (lua.Boot.__instanceof(o,t)) then 
+    do return o end;
+  else
+    _G.error("Cannot cast " .. Std.string(o) .. " to " .. Std.string(t),0);
   end;
 end
 lua.Boot.printEnum = function(o,s) 
@@ -366,6 +1280,29 @@ lua.Boot.__string_rec = function(o,s)
     do return "<userdata>" end;else
   _G.error("Unknown Lua type",0); end;
 end
+lua.Boot.extendsOrImplements = function(cl1,cl2) 
+  if ((cl1 == nil) or (cl2 == nil)) then 
+    do return false end;
+  else
+    if (cl1 == cl2) then 
+      do return true end;
+    else
+      if (cl1.__interfaces__ ~= nil) then 
+        local intf = cl1.__interfaces__;
+        local _g1 = 1;
+        local _g = _hx_table.maxn(intf) + 1;
+        while (_g1 < _g) do 
+          _g1 = _g1 + 1;
+          local i = _g1 - 1;
+          if (lua.Boot.extendsOrImplements(intf[i],cl2)) then 
+            do return true end;
+          end;
+          end;
+      end;
+    end;
+  end;
+  do return lua.Boot.extendsOrImplements(cl1.__super__,cl2) end;
+end
 lua.Boot.fieldIterator = function(o) 
   local tbl = (function() 
     local _hx_1
@@ -390,6 +1327,31 @@ lua.Boot.fieldIterator = function(o)
     do return cur_val ~= nil end;
   end}) end;
 end
+
+lua.UserData.new = {}
+lua.UserData.__name__ = true
+
+lua.Thread.new = {}
+lua.Thread.__name__ = true
+_hx_bit_clamp = function(v) 
+  if v <= 2147483647 and v >= -2147483648 then
+    if v > 0 then return _G.math.floor(v)
+    else return _G.math.ceil(v)
+    end
+  end
+  if v > 2251798999999999 then v = v*2 end;
+  if (v ~= v or math.abs(v) == _G.math.huge) then return nil end
+  return _hx_bit.band(v, 2147483647 ) - math.abs(_hx_bit.band(v, 2147483648))
+end
+pcall(require, 'bit')
+if bit then
+  _hx_bit = bit
+elseif bit32 then
+  local _hx_bit_raw = bit32
+  _hx_bit = setmetatable({}, { __index = _hx_bit_raw });
+  _hx_bit.bnot = function(...) return _hx_bit_clamp(_hx_bit_raw.bnot(...)) end;
+  _hx_bit.bxor = function(...) return _hx_bit_clamp(_hx_bit_raw.bxor(...)) end;
+end
 local _hx_string_mt = _G.getmetatable('');
 String.__oldindex = _hx_string_mt.__index;
 _hx_string_mt.__index = String.__index;
@@ -398,8 +1360,16 @@ _hx_string_mt.__concat = _hx_string_mt.__add
 _hx_array_mt.__index = Array.prototype
 
 local _hx_static_init = function()
+  hxnet.protocols.Telnet.WILL = 251
+  hxnet.protocols.Telnet.WONT = 252
+  hxnet.protocols.Telnet.DO = 253
+  hxnet.protocols.Telnet.DONT = 254
+  hxnet.protocols.Telnet.IAC = 255
   lua.Boot.hiddenFields = {__id__=true, hx__closures=true, super=true, prototype=true, __fields__=true, __ifields__=true, __class__=true, __properties__=true}
   
+  String.prototype.__class__ = String;
+  String.__name__ = true;
+  Array.__name__ = true;
 end
 
 _hx_bind = function(o,m)
@@ -416,7 +1386,28 @@ _hx_bind = function(o,m)
   end
   return f;
 end
+_hx_funcToField = function(f)
+  if type(f) == 'function' then 
+    return function(self,...) 
+      return f(...) 
+    end
+  else 
+    return f
+  end
+end
 _hx_print = print or (function() end)
+_hx_table = {}
+_hx_table.pack = _G.table.pack or function(...)
+    return {...}
+end
+_hx_table.unpack = _G.table.unpack or _G.unpack
+_hx_table.maxn = _G.table.maxn or function(t)
+  local maxn=0;
+  for i in pairs(t) do
+    maxn=type(i)=='number'and i>maxn and i or maxn
+  end
+  return maxn
+end;
 _hx_static_init();
 Main.main()
 return _hx_exports

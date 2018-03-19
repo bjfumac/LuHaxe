@@ -37,44 +37,72 @@ class Example{
 	private var sphere:GameObject;
 	private var txt:GameObject;
 	private var camera:GameObject;
-	
+	private var client:hxnet.tcp.Client;
 	
     public function new(){
+		TestGameObject();
+		TestUGUI();
+		TestCoroutine();
+		TestSocket();
+    }
+	
+	public function Update():Void{
+		MoveCube();
+		FollowCube();
+		HandleSocket();
+	}
+	
+	private function TestGameObject():Void{
 		//测试GameObject
 		this.go = GameObject.New("go");
 		this.go.AddComponent(typeof(unityengine.ParticleSystem));
 		this.cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		this.sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 		this.cube.transform.position = Vector3.New(3, 0, 0);
-		
-		//测试Prefab
+	}
+	
+	private function TestUGUI():Void{
+		//测试Prefab和UGUI，注意需要在tolua注册对应的UGUI类
 		var canvas = GameObject.Find("Canvas");		
 		this.txt = Object.Instantiate(Resources.Load("TextPreb"));
 		this.txt.transform.parent = canvas.transform;
 		this.camera = GameObject.Find("Main Camera");
-
+	}
+	
+	private function TestCoroutine():Void{
 		//测试Update方法
 		TimerHelper.AddUpdateListener(this, this.Update);
 		
 		//Coroutine 测试协程
 		Coroutine.start(CoFunc);
-		
-		
-		
-		
-    }
+	}
 	
-	public function Update():Void{
+	private function TestSocket():Void{
+		//Socket客户端，支持TCP、WebSocket
+		client = new hxnet.tcp.Client();
+		client.protocol = new TCPClientHandler(); 
+		//client.protocol = new WSClientHandler(); 
+		client.connect("localhost", 4000);
+		client.blocking = false; // important for gui clients
+	}
+	
+	private function HandleSocket():Void{
+		client.update();
+		trace("Network Connected = " + client.connected);
+	}
+	
+	private function MoveCube():Void{
 		//测试GameObject位移
 		var pos = this.cube.transform.position;
 		var newPos = Vector3.New(pos.x + 0.01, pos.y, pos.z);
 		this.cube.transform.position = newPos;
-		
+	}
+	
+	private function FollowCube():Void{
 		//测试相机追踪、vector3运算、重载（见Vector3.Mul）
 		var camPos = this.cube.transform.position.Add(Vector3.up.Mul(5)).Sub(this.cube.transform.forward.Mul(5));
 		this.camera.transform.position = camPos;
 		this.camera.transform.LookAt(this.cube.transform);
-		
 	}
 	
 	private function CoFunc():Void{
