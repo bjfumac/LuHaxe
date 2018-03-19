@@ -36,6 +36,8 @@ class Example{
 	private var cube:GameObject;
 	private var sphere:GameObject;
 	private var txt:GameObject;
+	private var camera:GameObject;
+	
 	
     public function new(){
 		//测试GameObject
@@ -49,12 +51,15 @@ class Example{
 		var canvas = GameObject.Find("Canvas");		
 		this.txt = Object.Instantiate(Resources.Load("TextPreb"));
 		this.txt.transform.parent = canvas.transform;
-		
+		this.camera = GameObject.Find("Main Camera");
+
 		//测试Update方法
 		TimerHelper.AddUpdateListener(this, this.Update);
 		
 		//Coroutine 测试协程
 		Coroutine.start(CoFunc);
+		
+		
 		
 		
     }
@@ -64,6 +69,12 @@ class Example{
 		var pos = this.cube.transform.position;
 		var newPos = Vector3.New(pos.x + 0.01, pos.y, pos.z);
 		this.cube.transform.position = newPos;
+		
+		//测试相机追踪、vector3运算、重载（见Vector3.Mul）
+		var camPos = this.cube.transform.position.Add(Vector3.up.Mul(5)).Sub(this.cube.transform.forward.Mul(5));
+		this.camera.transform.position = camPos;
+		this.camera.transform.LookAt(this.cube.transform);
+		
 	}
 	
 	private function CoFunc():Void{

@@ -32,5 +32,20 @@ extern class Vector3
 	var x:Float;
 	var y:Float;
 	var z:Float;
+	static var up:Vector3;
+	static var down:Vector3;
+	static var right:Vector3;
+	static var left:Vector3;
+	static var back:Vector3;
+	static var zero:Vector3;
+	static var one:Vector3;
+	
 	static function New(x:Float, y:Float, z:Float):Vector3;
+	function Add(b:Vector3):Vector3;
+	@:overload(function(b:Float):Vector3 {})
+	function Div(b:Vector3):Vector3;
+	@:overload(function(b:Float):Vector3 {})
+	function Mul(b:Vector3):Vector3;
+	function Sub(b:Vector3):Vector3;
+	function Equals(b:Vector3):Vector3;
 }

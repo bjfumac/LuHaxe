@@ -64,6 +64,7 @@ local TimerHelper = _hx_e()
 local example = {}
 example.Example = _hx_e()
 local haxe = {}
+haxe.Log = _hx_e()
 haxe.io = {}
 haxe.io.Eof = _hx_e()
 local lua = {}
@@ -192,6 +193,7 @@ example.Example.super = function(self)
   local canvas = UnityEngine.GameObject.Find("Canvas");
   self.txt = UnityEngine.Object.Instantiate(UnityEngine.Resources.Load("TextPreb"));
   self.txt.transform.parent = canvas.transform;
+  self.camera = UnityEngine.GameObject.Find("Main Camera");
   TimerHelper.AddUpdateListener(self,_hx_bind(self,self.Update));
   coroutine.start(_hx_bind(self,self.CoFunc));
 end
@@ -200,16 +202,37 @@ example.Example.prototype = _hx_a(
     local pos = self.cube.transform.position;
     local newPos = Vector3.New(pos.x + 0.01,pos.y,pos.z);
     self.cube.transform.position = newPos;
+    local camPos = self.cube.transform.position:Add(Vector3.up:Mul(5)):Sub(self.cube.transform.forward:Mul(5));
+    self.camera.transform.position = camPos;
+    self.camera.transform:LookAt(self.cube.transform);
   end,
   'CoFunc', function(self) 
     local www = UnityEngine.WWW.New("http://www.baidu.com");
     coroutine.www(www);
     local content = DataHelper.WWWtoString(www);
+    haxe.Log.trace(content,_hx_o({__fields__={fileName=true,lineNumber=true,className=true,methodName=true},fileName="Example.hx",lineNumber=85,className="example.Example",methodName="CoFunc"}));
     self.txt:GetComponent(typeof(UnityEngine.UI.Text)).text = "Bytes Downloaded:" .. www.bytesDownloaded;
     coroutine.wait(3);
     self.txt:GetComponent(typeof(UnityEngine.UI.Text)).text = "Coroutine Ended";
   end
 )
+
+haxe.Log.new = {}
+haxe.Log.trace = function(v,infos) 
+  local str = nil;
+  if (infos ~= nil) then 
+    str = infos.fileName .. ":" .. infos.lineNumber .. ": " .. Std.string(v);
+    if (infos.customParams ~= nil) then 
+      str = str .. ("," .. infos.customParams:join(","));
+    end;
+  else
+    str = v;
+  end;
+  if (str == nil) then 
+    str = "null";
+  end;
+  _hx_print(str);
+end
 
 haxe.io.Eof.new = function() 
   local self = _hx_new(haxe.io.Eof.prototype)
@@ -393,6 +416,7 @@ _hx_bind = function(o,m)
   end
   return f;
 end
+_hx_print = print or (function() end)
 _hx_static_init();
 Main.main()
 return _hx_exports

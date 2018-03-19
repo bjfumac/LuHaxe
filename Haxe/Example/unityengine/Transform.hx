@@ -60,5 +60,6 @@ extern class Transform
 	function IsChildOf(parent:Transform):Bool;
 	function GetEnumerator():Any;
 	function GetChild(index:Int):Transform;
+	function LookAt(target:Transform, worldUp:Vector3 = Vector3.up):Void; 
 }
 
