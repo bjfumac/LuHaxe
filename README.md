@@ -4,7 +4,7 @@ LuHaxe是我的一个脑洞概念实现，它的目标是让程序员通过编�
 ## LuHaxe特点
 * 底层采用某大神的[tolua](https://github.com/topameng/tolua)，成熟稳定，重复造车轮子不是脑洞的目的。因此本框架具有tolua的全部特点。
 * 采用Haxe语言进行脚本编写，并“翻译”成lua执行，代替在tolua环境下进行lua脚本编写的传统开发模式。
-* Haxe是强类型的面向对象语言，具有完整的面向对象特性，包括但不限于继承、接口、抽象、g/setter、lambda、泛型模板等，详见[Wiki](https://en.wikipedia.org/wiki/Haxe)。更贴合Java、C#等程序员的书写和设计习惯。
+* Haxe是强类型的面向对象语言，具有完整的面向对象特性，包括但不限于继承、接口、抽象、重载、g/setter、lambda、泛型模板等，详见[Wiki](https://en.wikipedia.org/wiki/Haxe)。更贴合Java、C#等程序员的书写和设计习惯。
 * 支持HaxeDevelop(FlashDevelop)、VS Code等代码编辑工具，具有完善的代码提示、代码自动完成、Refactor、类型检测、编译时错误检测等。解决了当下lua开发中比较大的痛点，方便多人同步进行规模化开发。
 * 可通过trace输出日志的方式调试Haxe文件，亦可以通过tolua的调试机制调试生成的lua文件。
 * AS、TS、JS程序员可三分钟内上手。
@@ -114,6 +114,7 @@ extern class Vector3
 
 ## 项目进度
 当前搭建好了脚手架，进行了可行性验证，但是还有大量API未映射，希望得到各位大神的帮助。 
+* 已测试特性：GameObject、协程、UGUI、TCP/WS Socket、WWW。
 <br />
 
 ## 交流
